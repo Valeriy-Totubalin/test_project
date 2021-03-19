@@ -62,7 +62,3 @@ func (service *AuthService) SignIn(user *domain.User) (string, error) { // retur
 
 	return token, nil
 }
-
-func (service *AuthService) LogOut(userId int) error {
-	return nil
-}
