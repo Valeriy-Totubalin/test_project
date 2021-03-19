@@ -22,9 +22,13 @@ func NewManager(secret string) (*Manager, error) {
 }
 
 func (m *Manager) NewLink(link *domain.Link, ttl time.Duration) (string, error) {
+	jsonLink, err := json.Marshal(link)
+	if nil != err {
+		return "", err
+	}
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.StandardClaims{
 		ExpiresAt: time.Now().Add(ttl).Unix(),
-		Subject:   json.Marshal(link),
+		Subject:   string(jsonLink),
 	})
 
 	return token.SignedString([]byte(m.secret))
