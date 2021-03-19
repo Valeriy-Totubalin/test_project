@@ -1,6 +1,6 @@
 package domain
 
 type Link struct {
-	Id        int
+	ItemId    int
 	UserLogin string
 }

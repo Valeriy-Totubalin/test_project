@@ -11,10 +11,10 @@ func TestCreateLink(t *testing.T) {
 	login := "test_login"
 
 	link := &Link{
-		Id:        id,
+		ItemId:    id,
 		UserLogin: login,
 	}
 
-	assert.Equal(t, id, link.Id)
+	assert.Equal(t, id, link.ItemId)
 	assert.Equal(t, login, link.UserLogin)
 }
