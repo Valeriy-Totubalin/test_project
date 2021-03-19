@@ -6,7 +6,7 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-func TestCreate(t *testing.T) {
+func TestCreateUser(t *testing.T) {
 	id := 42
 	login := "test_login"
 	password := "password_string"
