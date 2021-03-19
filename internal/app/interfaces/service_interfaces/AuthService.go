@@ -5,7 +5,6 @@ import (
 )
 
 type AuthService interface {
-	SignUp(user domain.User) error
-	SignIn(secret string, user domain.User) (string, error) // return token
-	LogOut(userId int) error
+	SignUp(user *domain.User) error
+	SignIn(user *domain.User) (string, error) // return token
 }
