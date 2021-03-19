@@ -1,6 +1,8 @@
 package service_interfaces
 
-import "github.com/Valeriy-Totubalin/test_project/internal/domain"
+import (
+	"github.com/Valeriy-Totubalin/test_project/internal/domain"
+)
 
 type AuthService interface {
 	SignUp(user domain.User) error
