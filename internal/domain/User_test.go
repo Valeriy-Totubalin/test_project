@@ -2,6 +2,7 @@ package domain
 
 import (
 	"testing"
+
 	"github.com/stretchr/testify/assert"
 )
 
@@ -11,8 +12,8 @@ func TestCreate(t *testing.T) {
 	password := "password_string"
 
 	user := User{
-		Id: id,
-		Login: login,
+		Id:       id,
+		Login:    login,
 		Password: password,
 	}
 
