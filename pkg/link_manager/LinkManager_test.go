@@ -31,8 +31,25 @@ func TestNewLink(t *testing.T) {
 		UserLogin: "test_login",
 	}
 
-	tempLink, err := manager.NewLink(1, 15*time.Minute)
+	tempLink, err := manager.NewLink(link, 15*time.Minute)
 
 	assert.Nil(t, err)
 	assert.Equal(t, reflect.String, reflect.TypeOf(tempLink).Kind())
+}
+
+func TestParse(t *testing.T) {
+	secret := "secret_key"
+	link := &domain.Link{
+		Id:        42,
+		UserLogin: "test_login",
+	}
+
+	manager, _ := NewManager(secret)
+
+	tempLink, _ := manager.NewLink(link, 15*time.Minute)
+
+	linkResult, err := manager.Parse(tempLink)
+
+	assert.Nil(t, err)
+	assert.Equal(t, link, linkResult)
 }

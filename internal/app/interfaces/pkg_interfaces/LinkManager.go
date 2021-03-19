@@ -8,5 +8,5 @@ import (
 
 type LinkManager interface {
 	NewLink(link *domain.Link, ttl time.Duration) (string, error)
-	Parse(accessToken string) (*domain.Link, error) // возвращает id пользователя
+	Parse(tempLink string) (*domain.Link, error) // возвращает id пользователя
 }
