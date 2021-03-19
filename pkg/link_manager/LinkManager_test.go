@@ -26,7 +26,7 @@ func TestNewLink(t *testing.T) {
 	secret := "secret_key"
 	manager, _ := NewManager(secret)
 
-	link = &domain.Link{
+	link := &domain.Link{
 		Id:        42,
 		UserLogin: "test_login",
 	}
