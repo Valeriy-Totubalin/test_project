@@ -1,4 +1,4 @@
-package domain
+package link_manager
 
 type Link struct {
 	ItemId    int

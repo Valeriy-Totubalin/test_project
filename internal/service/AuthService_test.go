@@ -56,6 +56,16 @@ func (m *UserRepositoryMock) GetByLogin(login string) (*domain.User, error) {
 	}, nil
 }
 
+func (m *UserRepositoryMock) GetById(userId int) (*domain.User, error) {
+	m.Called(userId)
+
+	return &domain.User{
+		Id:       42,
+		Login:    "test_login",
+		Password: "password_hash",
+	}, nil
+}
+
 func TestNewAuthService(t *testing.T) {
 	repository := new(UserRepositoryMock)
 	passwordHasher := new(PasswordHasherMock)
