@@ -15,7 +15,7 @@ type AuthService struct {
 	TokenManager   pkg_interfaces.TokenManager
 }
 
-const ttl = 15 * time.Minute // время жизни токена 15 минут
+const ttlToken = 15 * time.Minute // время жизни токена 15 минут
 
 func NewAuthService(
 	userRepo repository_interfaces.UserRepository,
@@ -55,7 +55,7 @@ func (service *AuthService) SignIn(user *domain.User) (string, error) { // retur
 		return "", err
 	}
 
-	token, err := service.TokenManager.NewJWT(user.Id, ttl)
+	token, err := service.TokenManager.NewJWT(user.Id, ttlToken)
 	if nil != err {
 		return "", err
 	}

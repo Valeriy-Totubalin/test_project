@@ -5,7 +5,6 @@ import (
 	"errors"
 	"time"
 
-	"github.com/Valeriy-Totubalin/test_project/internal/domain"
 	"github.com/dgrijalva/jwt-go"
 )
 
@@ -21,16 +20,21 @@ func NewManager(secret string) (*Manager, error) {
 	return &Manager{secret: secret}, nil
 }
 
-func (m *Manager) NewLink(link *domain.Link, ttl time.Duration) (string, error) {
+// не уверен, что кастомные либы должны знать о домене. возврат json? ансериализация уже в сервисе
+func (m *Manager) NewLink(link *Link, ttl time.Duration) (string, error) {
+	jsonLink, err := json.Marshal(link)
+	if nil != err {
+		return "", err
+	}
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.StandardClaims{
 		ExpiresAt: time.Now().Add(ttl).Unix(),
-		Subject:   json.Marshal(link),
+		Subject:   string(jsonLink),
 	})
 
 	return token.SignedString([]byte(m.secret))
 }
 
-func (m *Manager) Parse(tempLink string) (*domain.Link, error) {
+func (m *Manager) Parse(tempLink string) (*Link, error) {
 	token, err := jwt.Parse(tempLink, func(token *jwt.Token) (i interface{}, err error) {
 		if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
 			return nil, errors.New("unexpected string method")
@@ -47,7 +51,7 @@ func (m *Manager) Parse(tempLink string) (*domain.Link, error) {
 	}
 
 	jsonLink := claims["sub"].(string)
-	link := &domain.Link{}
+	link := &Link{}
 	json.Unmarshal([]byte(jsonLink), link)
 
 	return link, nil

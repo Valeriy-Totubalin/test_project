@@ -5,7 +5,6 @@ import (
 	"testing"
 	"time"
 
-	"github.com/Valeriy-Totubalin/test_project/internal/domain"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -26,8 +25,8 @@ func TestNewLink(t *testing.T) {
 	secret := "secret_key"
 	manager, _ := NewManager(secret)
 
-	link = &domain.Link{
-		Id:        42,
+	link := &Link{
+		ItemId:    42,
 		UserLogin: "test_login",
 	}
 
@@ -39,8 +38,8 @@ func TestNewLink(t *testing.T) {
 
 func TestParse(t *testing.T) {
 	secret := "secret_key"
-	link := &domain.Link{
-		Id:        42,
+	link := &Link{
+		ItemId:    42,
 		UserLogin: "test_login",
 	}
 
