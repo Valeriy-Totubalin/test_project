@@ -1,8 +1,7 @@
 package service
 
 import (
-	"time"
-
+	"github.com/Valeriy-Totubalin/test_project/internal/app/interfaces/config_interfaces"
 	"github.com/Valeriy-Totubalin/test_project/internal/app/interfaces/pkg_interfaces"
 	"github.com/Valeriy-Totubalin/test_project/internal/app/interfaces/repository_interfaces"
 	"github.com/Valeriy-Totubalin/test_project/internal/app/interfaces/service_interfaces"
@@ -14,19 +13,20 @@ type ItemService struct {
 	ItemRepository repository_interfaces.ItemRepository
 	LinkManager    pkg_interfaces.LinkManager
 	UserRepository repository_interfaces.UserRepository
+	Config         config_interfaces.GetterLinkTTL
 }
-
-const ttlLink = 24 * time.Hour // время жизни ссылки 24 часа
 
 func NewItemService(
 	itemRepo repository_interfaces.ItemRepository,
 	linkManager pkg_interfaces.LinkManager,
 	userRepo repository_interfaces.UserRepository,
+	config config_interfaces.GetterLinkTTL,
 ) service_interfaces.ItemService {
 	return &ItemService{
 		ItemRepository: itemRepo,
 		LinkManager:    linkManager,
 		UserRepository: userRepo,
+		Config:         config,
 	}
 }
 
@@ -48,7 +48,8 @@ func (service *ItemService) GetTempLink(link *domain.Link) (string, error) {
 		ItemId:    link.ItemId,
 		UserLogin: link.UserLogin,
 	}
-	return service.LinkManager.NewLink(libLink, ttlLink)
+
+	return service.LinkManager.NewLink(libLink, service.Config.GetLinkTTL())
 }
 
 func (service *ItemService) CanConfirm(tempLink string, userId int) (bool, error) {
