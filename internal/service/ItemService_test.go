@@ -10,6 +10,22 @@ import (
 	"github.com/stretchr/testify/mock"
 )
 
+type ConfigMock struct {
+	mock.Mock
+}
+
+func (m *ConfigMock) GetLinkTTL() time.Duration {
+	m.Called()
+
+	return 24 * time.Hour
+}
+
+func (m *ConfigMock) GetTokenTTL() time.Duration {
+	m.Called()
+
+	return 15 * time.Minute
+}
+
 type LinkManagerMock struct {
 	mock.Mock
 }
@@ -71,14 +87,16 @@ func TestNewItemService(t *testing.T) {
 	repository := new(ItemRepositoryMock)
 	userRepository := new(UserRepositoryMock)
 	linkManager := new(LinkManagerMock)
+	config := new(ConfigMock)
 
 	serviceExpected := &ItemService{
 		ItemRepository: repository,
 		LinkManager:    linkManager,
 		UserRepository: userRepository,
+		Config:         config,
 	}
 
-	serviceEqual := NewItemService(repository, linkManager, userRepository)
+	serviceEqual := NewItemService(repository, linkManager, userRepository, config)
 
 	assert.Equal(t, serviceExpected, serviceEqual)
 }
@@ -87,8 +105,9 @@ func TestCreate(t *testing.T) {
 	repository := new(ItemRepositoryMock)
 	linkManager := new(LinkManagerMock)
 	userRepository := new(UserRepositoryMock)
+	config := new(ConfigMock)
 
-	service := NewItemService(repository, linkManager, userRepository)
+	service := NewItemService(repository, linkManager, userRepository, config)
 
 	item := &domain.Item{
 		Name: "item_name",
@@ -106,8 +125,9 @@ func TestDelete(t *testing.T) {
 	repository := new(ItemRepositoryMock)
 	linkManager := new(LinkManagerMock)
 	userRepository := new(UserRepositoryMock)
+	config := new(ConfigMock)
 
-	service := NewItemService(repository, linkManager, userRepository)
+	service := NewItemService(repository, linkManager, userRepository, config)
 
 	item := &domain.Item{
 		Id: 42,
@@ -125,8 +145,9 @@ func TestGetAll(t *testing.T) {
 	repository := new(ItemRepositoryMock)
 	linkManager := new(LinkManagerMock)
 	userRepository := new(UserRepositoryMock)
+	config := new(ConfigMock)
 
-	service := NewItemService(repository, linkManager, userRepository)
+	service := NewItemService(repository, linkManager, userRepository, config)
 
 	items := []*domain.Item{
 		{
@@ -153,8 +174,9 @@ func TestGetTempLink(t *testing.T) {
 	repository := new(ItemRepositoryMock)
 	linkManager := new(LinkManagerMock)
 	userRepository := new(UserRepositoryMock)
+	config := new(ConfigMock)
 
-	service := NewItemService(repository, linkManager, userRepository)
+	service := NewItemService(repository, linkManager, userRepository, config)
 
 	link := &domain.Link{
 		ItemId:    42,
@@ -167,10 +189,12 @@ func TestGetTempLink(t *testing.T) {
 
 	tempLink := "temp_link"
 
+	config.On("GetLinkTTL").Return(24 * time.Hour).Once()
 	linkManager.On("NewLink", libLink, 24*time.Hour).Return(tempLink, nil).Once()
 
 	linkReturned, err := service.GetTempLink(link)
 
+	config.AssertExpectations(t)
 	linkManager.AssertExpectations(t)
 	assert.Nil(t, err)
 	assert.Equal(t, tempLink, linkReturned)
@@ -180,8 +204,9 @@ func TestCanConfirm(t *testing.T) {
 	repository := new(ItemRepositoryMock)
 	linkManager := new(LinkManagerMock)
 	userRepository := new(UserRepositoryMock)
+	config := new(ConfigMock)
 
-	service := NewItemService(repository, linkManager, userRepository)
+	service := NewItemService(repository, linkManager, userRepository, config)
 
 	tempLink := "temp_link"
 	userId := 42
@@ -211,8 +236,9 @@ func TestConfirm(t *testing.T) {
 	repository := new(ItemRepositoryMock)
 	linkManager := new(LinkManagerMock)
 	userRepository := new(UserRepositoryMock)
+	config := new(ConfigMock)
 
-	service := NewItemService(repository, linkManager, userRepository)
+	service := NewItemService(repository, linkManager, userRepository, config)
 
 	userId := 42
 	tempLink := "temp_link"

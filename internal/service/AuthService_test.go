@@ -70,14 +70,16 @@ func TestNewAuthService(t *testing.T) {
 	repository := new(UserRepositoryMock)
 	passwordHasher := new(PasswordHasherMock)
 	tokenManager := new(TokenManagerMock)
+	config := new(ConfigMock)
 
 	serviceExpected := &AuthService{
 		PasswordHasher: passwordHasher,
 		UserRepository: repository,
 		TokenManager:   tokenManager,
+		Config:         config,
 	}
 
-	serviceEqual := NewAuthService(repository, passwordHasher, tokenManager)
+	serviceEqual := NewAuthService(repository, passwordHasher, tokenManager, config)
 
 	assert.Equal(t, serviceExpected, serviceEqual)
 }
@@ -86,7 +88,9 @@ func TestSignUp(t *testing.T) {
 	passwordHasher := new(PasswordHasherMock)
 	repository := new(UserRepositoryMock)
 	tokenManager := new(TokenManagerMock)
-	service := NewAuthService(repository, passwordHasher, tokenManager)
+	config := new(ConfigMock)
+
+	service := NewAuthService(repository, passwordHasher, tokenManager, config)
 
 	user := &domain.User{
 		Login:    "test_login",
@@ -112,7 +116,9 @@ func TestSignIn(t *testing.T) {
 	passwordHasher := new(PasswordHasherMock)
 	repository := new(UserRepositoryMock)
 	tokenManager := new(TokenManagerMock)
-	service := NewAuthService(repository, passwordHasher, tokenManager)
+	config := new(ConfigMock)
+
+	service := NewAuthService(repository, passwordHasher, tokenManager, config)
 	token := "token"
 
 	user := &domain.User{
@@ -129,11 +135,13 @@ func TestSignIn(t *testing.T) {
 
 	repository.On("GetByLogin", user.Login).Return(userReturned).Once()
 	passwordHasher.On("CheckPassword", user.Password, userReturned.Password).Once()
+	config.On("GetTokenTTL").Return(15 * time.Minute).Once()
 	tokenManager.On("NewJWT", user.Id, 15*time.Minute).Return(token).Once()
 
 	tokenResult, err := service.SignIn(user)
 	assert.Equal(t, token, tokenResult)
 
+	config.AssertExpectations(t)
 	passwordHasher.AssertExpectations(t)
 	repository.AssertExpectations(t)
 	tokenManager.AssertExpectations(t)

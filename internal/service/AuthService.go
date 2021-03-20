@@ -1,8 +1,7 @@
 package service
 
 import (
-	"time"
-
+	"github.com/Valeriy-Totubalin/test_project/internal/app/interfaces/config_interfaces"
 	"github.com/Valeriy-Totubalin/test_project/internal/app/interfaces/pkg_interfaces"
 	"github.com/Valeriy-Totubalin/test_project/internal/app/interfaces/repository_interfaces"
 	"github.com/Valeriy-Totubalin/test_project/internal/app/interfaces/service_interfaces"
@@ -13,19 +12,20 @@ type AuthService struct {
 	PasswordHasher pkg_interfaces.PasswordHasher
 	UserRepository repository_interfaces.UserRepository
 	TokenManager   pkg_interfaces.TokenManager
+	Config         config_interfaces.GetterTokenTTL
 }
-
-const ttlToken = 15 * time.Minute // время жизни токена 15 минут
 
 func NewAuthService(
 	userRepo repository_interfaces.UserRepository,
 	passwordHasher pkg_interfaces.PasswordHasher,
 	tokenManager pkg_interfaces.TokenManager,
+	config config_interfaces.GetterTokenTTL,
 ) service_interfaces.AuthService {
 	return &AuthService{
 		UserRepository: userRepo,
 		PasswordHasher: passwordHasher,
 		TokenManager:   tokenManager,
+		Config:         config,
 	}
 }
 
@@ -55,7 +55,7 @@ func (service *AuthService) SignIn(user *domain.User) (string, error) { // retur
 		return "", err
 	}
 
-	token, err := service.TokenManager.NewJWT(user.Id, ttlToken)
+	token, err := service.TokenManager.NewJWT(user.Id, service.Config.GetTokenTTL())
 	if nil != err {
 		return "", err
 	}
