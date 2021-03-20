@@ -23,7 +23,10 @@ func (m *LinkManagerMock) NewLink(link *link_manager.Link, ttl time.Duration) (s
 func (m *LinkManagerMock) Parse(tempLink string) (*link_manager.Link, error) {
 	m.Called(tempLink)
 
-	return nil, nil
+	return &link_manager.Link{
+		ItemId:    42,
+		UserLogin: "test_login",
+	}, nil
 }
 
 type ItemRepositoryMock struct {
@@ -58,16 +61,24 @@ func (m *ItemRepositoryMock) GetAll() ([]*domain.Item, error) {
 	}, nil
 }
 
+func (m *ItemRepositoryMock) Transfer(itemId int, userId int) error {
+	m.Called(itemId, userId)
+
+	return nil
+}
+
 func TestNewItemService(t *testing.T) {
 	repository := new(ItemRepositoryMock)
+	userRepository := new(UserRepositoryMock)
 	linkManager := new(LinkManagerMock)
 
 	serviceExpected := &ItemService{
 		ItemRepository: repository,
 		LinkManager:    linkManager,
+		UserRepository: userRepository,
 	}
 
-	serviceEqual := NewItemService(repository, linkManager)
+	serviceEqual := NewItemService(repository, linkManager, userRepository)
 
 	assert.Equal(t, serviceExpected, serviceEqual)
 }
@@ -75,8 +86,9 @@ func TestNewItemService(t *testing.T) {
 func TestCreate(t *testing.T) {
 	repository := new(ItemRepositoryMock)
 	linkManager := new(LinkManagerMock)
+	userRepository := new(UserRepositoryMock)
 
-	service := NewItemService(repository, linkManager)
+	service := NewItemService(repository, linkManager, userRepository)
 
 	item := &domain.Item{
 		Name: "item_name",
@@ -93,8 +105,9 @@ func TestCreate(t *testing.T) {
 func TestDelete(t *testing.T) {
 	repository := new(ItemRepositoryMock)
 	linkManager := new(LinkManagerMock)
+	userRepository := new(UserRepositoryMock)
 
-	service := NewItemService(repository, linkManager)
+	service := NewItemService(repository, linkManager, userRepository)
 
 	item := &domain.Item{
 		Id: 42,
@@ -111,8 +124,9 @@ func TestDelete(t *testing.T) {
 func TestGetAll(t *testing.T) {
 	repository := new(ItemRepositoryMock)
 	linkManager := new(LinkManagerMock)
+	userRepository := new(UserRepositoryMock)
 
-	service := NewItemService(repository, linkManager)
+	service := NewItemService(repository, linkManager, userRepository)
 
 	items := []*domain.Item{
 		{
@@ -138,8 +152,9 @@ func TestGetAll(t *testing.T) {
 func TestGetTempLink(t *testing.T) {
 	repository := new(ItemRepositoryMock)
 	linkManager := new(LinkManagerMock)
+	userRepository := new(UserRepositoryMock)
 
-	service := NewItemService(repository, linkManager)
+	service := NewItemService(repository, linkManager, userRepository)
 
 	link := &domain.Link{
 		ItemId:    42,
@@ -159,4 +174,59 @@ func TestGetTempLink(t *testing.T) {
 	linkManager.AssertExpectations(t)
 	assert.Nil(t, err)
 	assert.Equal(t, tempLink, linkReturned)
+}
+
+func TestCanConfirm(t *testing.T) {
+	repository := new(ItemRepositoryMock)
+	linkManager := new(LinkManagerMock)
+	userRepository := new(UserRepositoryMock)
+
+	service := NewItemService(repository, linkManager, userRepository)
+
+	tempLink := "temp_link"
+	userId := 42
+	link := &link_manager.Link{
+		ItemId:    42,
+		UserLogin: "test_login",
+	}
+	user := &domain.User{
+		Id:       42,
+		Login:    "test_login",
+		Password: "password_hash",
+	}
+
+	linkManager.On("Parse", tempLink).Return(link, nil).Once()
+	userRepository.On("GetById", userId).Return(user, nil).Once()
+
+	canConfirm, err := service.CanConfirm(tempLink, userId)
+
+	linkManager.AssertExpectations(t)
+	userRepository.AssertExpectations(t)
+	assert.Equal(t, userId, user.Id)
+	assert.Nil(t, err)
+	assert.True(t, canConfirm)
+}
+
+func TestConfirm(t *testing.T) {
+	repository := new(ItemRepositoryMock)
+	linkManager := new(LinkManagerMock)
+	userRepository := new(UserRepositoryMock)
+
+	service := NewItemService(repository, linkManager, userRepository)
+
+	userId := 42
+	tempLink := "temp_link"
+	link := &link_manager.Link{
+		ItemId:    42,
+		UserLogin: "test_login",
+	}
+
+	linkManager.On("Parse", tempLink).Return(link, nil).Once()
+	repository.On("Transfer", link.ItemId, userId).Return(nil).Once()
+
+	err := service.Confirm(tempLink, userId)
+
+	linkManager.AssertExpectations(t)
+	repository.AssertExpectations(t)
+	assert.Nil(t, err)
 }
