@@ -62,3 +62,7 @@ func (service *AuthService) SignIn(user *domain.User) (string, error) { // retur
 
 	return token, nil
 }
+
+func (service *AuthService) IsExists(user *domain.User) bool {
+	return service.UserRepository.IsExists(user)
+}

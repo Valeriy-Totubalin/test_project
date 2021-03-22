@@ -11,11 +11,11 @@ import (
 )
 
 type ServicesFactory struct {
-	config      config.Config
+	config      *config.Config
 	repoFactory factories_interfaces.RepositoriesFactory
 }
 
-func NewServicesFactory(config config.Config) factories_interfaces.ServicesFactory {
+func NewServicesFactory(config *config.Config) factories_interfaces.ServicesFactory {
 	repoFactory := NewRepositoriesFactory(config.DB())
 
 	return &ServicesFactory{
@@ -24,7 +24,7 @@ func NewServicesFactory(config config.Config) factories_interfaces.ServicesFacto
 	}
 }
 
-func (f *ServicesFactory) NewUserService() (service_interfaces.AuthService, error) {
+func (f *ServicesFactory) NewAuthService() (service_interfaces.AuthService, error) {
 	userRepo := f.repoFactory.NewUserRepository()
 	passwordHasher := password_hasher.NewPasswordHasher()
 	tokenManager, err := token_manager.NewManager(f.config.GetTokenSecret())

@@ -5,6 +5,7 @@ import (
 
 	server "github.com/Valeriy-Totubalin/test_project"
 	"github.com/Valeriy-Totubalin/test_project/internal/app/config"
+	"github.com/Valeriy-Totubalin/test_project/internal/app/factories"
 	"github.com/Valeriy-Totubalin/test_project/internal/delivery/handler"
 )
 
@@ -21,7 +22,9 @@ func main() {
 		Config: conf.Srv(),
 	}
 
+	serviceFactory := factories.NewServicesFactory(conf)
 	handlers := new(handler.Handler)
+	handlers.ServiceFactory = serviceFactory
 
 	if err := srv.Run(handlers.InitRoutes()); err != nil {
 		log.Fatalf("error occured while running http sever: %s", err.Error())
