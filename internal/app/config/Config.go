@@ -4,17 +4,21 @@ import (
 	"os"
 	"strconv"
 	"time"
+
+	"github.com/Valeriy-Totubalin/test_project/internal/app/interfaces/config_interfaces"
 )
 
 type Config struct {
 	linkTTL  time.Duration
 	tokenTTL time.Duration
+	db       config_interfaces.DBConfig
 }
 
-func NewConfig() *Config {
+func NewConfig(dbConfig config_interfaces.DBConfig) *Config {
 	return &Config{
 		linkTTL:  getEnvAsHours("LINK_TTL", 24*time.Hour),
 		tokenTTL: getEnvAsMinutes("TOKEN_TTL", 15*time.Minute),
+		db:       dbConfig,
 	}
 }
 
@@ -50,4 +54,8 @@ func (c *Config) GetLinkTTL() *time.Duration {
 
 func (c *Config) GetTokenTTL() *time.Duration {
 	return &c.tokenTTL
+}
+
+func (c *Config) DB() config_interfaces.DBConfig {
+	return c.db
 }

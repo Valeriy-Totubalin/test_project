@@ -72,7 +72,6 @@ func (service *ItemService) Confirm(tempLink string, userId int) error {
 		return err
 	}
 
-	// необходимо внутри вызвать в транзакции удаление и создание нового объекта
 	err = service.ItemRepository.Transfer(link.ItemId, userId)
 	if nil != err {
 		return err
