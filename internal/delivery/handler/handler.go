@@ -1,7 +1,9 @@
 package handler
 
 import (
+	"errors"
 	"net/http"
+	"strconv"
 
 	"github.com/Valeriy-Totubalin/test_project/internal/app/interfaces/factories_interfaces"
 	"github.com/Valeriy-Totubalin/test_project/internal/app/interfaces/pkg_interfaces"
@@ -11,6 +13,9 @@ import (
 const UnknowError = "unknown error"
 const RegistrationSucces = "registration completed successfully"
 const UserAlreadyExists = "user already exists"
+const ItemCreatedSuccess = "item created successfully"
+const ItemDeletedSuccess = "item deleted successfully"
+const ItemNoCurrentUser = "item is not owned by the current user"
 
 type Handler struct {
 	TokenManager   pkg_interfaces.TokenManager
@@ -33,5 +38,28 @@ func (h *Handler) InitRoutes() *gin.Engine {
 		}
 	}
 
+	api := router.Group("/api")
+	{
+		v1 := api.Group("/v1")
+		v1.Use(h.checkToken) // middleware
+		{
+			items := v1.Group("/items")
+			{
+				items.POST("/new", h.createItem)
+				items.DELETE("/:id", h.deleteItem)
+			}
+		}
+	}
+
 	return router
+}
+
+func (h *Handler) GetCurrentUserId(c *gin.Context) (int, error) {
+	userId := c.MustGet("user_id")
+	if nil == userId {
+		return 0, errors.New("no current user")
+	}
+	id, _ := strconv.Atoi(userId.(string))
+
+	return id, nil
 }

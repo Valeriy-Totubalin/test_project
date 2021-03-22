@@ -68,5 +68,5 @@ func (h *Handler) signIn(c *gin.Context) {
 		return
 	}
 
-	c.JSON(http.StatusOK, response.Token{AccessToken: token})
+	c.JSON(http.StatusCreated, response.Token{AccessToken: token})
 }

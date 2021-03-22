@@ -25,14 +25,16 @@ func (repo *ItemRepository) Create(item *domain.Item) error {
 		return err
 	}
 
-	err = db.Create(&orm.Item{
+	itemOrm := &orm.Item{
 		Name:   item.Name,
 		UserId: item.UserId,
-	}).Error
+	}
 
+	err = db.Create(itemOrm).Error
 	if nil != err {
 		return err
 	}
+	item.Id = itemOrm.Id
 
 	return nil
 }
