@@ -20,7 +20,6 @@ func (h *Handler) InitRoutes() *gin.Engine {
 	router.GET("/ping", func(c *gin.Context) {
 		c.JSON(http.StatusOK, "pong")
 	})
-
 	// auth := router.Group("/auth")
 	// {
 	// 	v1 := auth.Group("/v1")

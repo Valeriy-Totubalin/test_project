@@ -20,7 +20,6 @@ func (s *Server) Run(handler http.Handler) error {
 		ReadTimeout:    s.Config.GetReadTimeout(),
 		WriteTimeout:   s.Config.GetWriteTimeout(),
 	}
-
 	return s.httpServer.ListenAndServe()
 }
 

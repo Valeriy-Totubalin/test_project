@@ -3,6 +3,7 @@ package user_repository
 import (
 	"errors"
 
+	"github.com/Valeriy-Totubalin/test_project/db/orm"
 	"github.com/Valeriy-Totubalin/test_project/internal/app/interfaces/repository_interfaces"
 	"github.com/Valeriy-Totubalin/test_project/internal/domain"
 )
@@ -17,7 +18,7 @@ func NewUserRepository(gorm repository_interfaces.GetterGormDB) *UserRepository 
 	}
 }
 
-func (repo *UserRepository) SignUp(user *domain.User) error {
+func (repo *UserRepository) Create(user *domain.User) error {
 	db, err := repo.Gorm.GetDB()
 	if nil != err {
 		return err
@@ -27,7 +28,7 @@ func (repo *UserRepository) SignUp(user *domain.User) error {
 		return errors.New("user already exists")
 	}
 
-	err = db.Create(&User{
+	err = db.Create(&orm.User{
 		Login:    user.Login,
 		Password: user.Password,
 	}).Error
@@ -45,7 +46,7 @@ func (repo *UserRepository) GetByLogin(login string) (*domain.User, error) {
 		return nil, err
 	}
 
-	user := User{}
+	user := orm.User{}
 	err = db.Where("login = ?", login).Find(&user).Error
 	if nil != err {
 		return nil, err
@@ -67,7 +68,7 @@ func (repo *UserRepository) GetById(userId int) (*domain.User, error) {
 		return nil, err
 	}
 
-	user := User{}
+	user := orm.User{}
 	err = db.First(&user, userId).Error
 	if nil != err {
 		return nil, err
