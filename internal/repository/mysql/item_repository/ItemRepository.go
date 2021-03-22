@@ -24,13 +24,13 @@ func (repo *ItemrRepository) Create(item *domain.Item) error {
 		return err
 	}
 
-	result := db.Create(&Item{
+	err = db.Create(&Item{
 		Name:   item.Name,
 		UserId: item.UserId,
-	})
+	}).Error
 
-	if nil != result.Error {
-		return result.Error
+	if nil != err {
+		return err
 	}
 
 	return nil
@@ -42,12 +42,12 @@ func (repo *ItemrRepository) DeleteById(itemId int) error {
 		return err
 	}
 
-	result := db.Delete(&Item{
+	err = db.Delete(&Item{
 		Id: itemId,
-	})
+	}).Error
 
-	if nil != result.Error {
-		return result.Error
+	if nil != err {
+		return err
 	}
 
 	return nil
@@ -61,9 +61,9 @@ func (repo *ItemrRepository) GetAll() ([]*domain.Item, error) {
 
 	var items []*Item
 
-	result := db.Limit(500).Find(&items)
-	if nil != result.Error {
-		return nil, result.Error
+	err = db.Limit(500).Find(&items).Error
+	if nil != err {
+		return nil, err
 	}
 
 	var domainItems []*domain.Item

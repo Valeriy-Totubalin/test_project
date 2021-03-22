@@ -27,10 +27,14 @@ func (repo *UserRepository) SignUp(user *domain.User) error {
 		return errors.New("user already exists")
 	}
 
-	db.Create(&User{
+	err = db.Create(&User{
 		Login:    user.Login,
 		Password: user.Password,
-	})
+	}).Error
+
+	if nil != err {
+		return err
+	}
 
 	return nil
 }
@@ -42,7 +46,11 @@ func (repo *UserRepository) GetByLogin(login string) (*domain.User, error) {
 	}
 
 	user := User{}
-	db.Where("login = ?", login).Find(&user)
+	err = db.Where("login = ?", login).Find(&user).Error
+	if nil != err {
+		return nil, err
+	}
+
 	if 0 == user.Id {
 		return nil, errors.New("user does not exist")
 	}
