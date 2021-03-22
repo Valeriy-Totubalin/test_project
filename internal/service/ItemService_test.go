@@ -83,6 +83,16 @@ func (m *ItemRepositoryMock) Transfer(itemId int, userId int) error {
 	return nil
 }
 
+func (m *ItemRepositoryMock) GetById(itemId int) (*domain.Item, error) {
+	m.Called(itemId)
+
+	return &domain.Item{
+		Id:     42,
+		Name:   "test_item",
+		UserId: 7,
+	}, nil
+}
+
 func TestNewItemService(t *testing.T) {
 	repository := new(ItemRepositoryMock)
 	userRepository := new(UserRepositoryMock)
@@ -255,4 +265,31 @@ func TestConfirm(t *testing.T) {
 	linkManager.AssertExpectations(t)
 	repository.AssertExpectations(t)
 	assert.Nil(t, err)
+}
+
+func TestIsOwner(t *testing.T) {
+	repository := new(ItemRepositoryMock)
+	linkManager := new(LinkManagerMock)
+	userRepository := new(UserRepositoryMock)
+	config := new(ConfigMock)
+
+	service := NewItemService(repository, linkManager, userRepository, config)
+
+	id := 42
+	name := "test_item"
+	userId := 7
+
+	item := &domain.Item{
+		Id:     id,
+		Name:   name,
+		UserId: userId,
+	}
+
+	repository.On("GetById", item.Id).Return(item, nil).Once()
+
+	isOwner, err := service.IsOwner(item.Id, item.UserId)
+
+	repository.AssertExpectations(t)
+	assert.Nil(t, err)
+	assert.True(t, isOwner)
 }

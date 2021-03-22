@@ -7,4 +7,5 @@ type ItemRepository interface {
 	DeleteById(itemId int) error
 	GetAll() ([]*domain.Item, error)
 	Transfer(itemId int, userId int) error
+	GetById(itemId int) (*domain.Item, error)
 }
