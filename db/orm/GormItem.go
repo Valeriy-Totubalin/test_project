@@ -1,4 +1,4 @@
-package item_repository
+package orm
 
 import "gorm.io/gorm"
 
