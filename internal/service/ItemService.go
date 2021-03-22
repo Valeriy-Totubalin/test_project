@@ -12,14 +12,14 @@ import (
 type ItemService struct {
 	ItemRepository repository_interfaces.ItemRepository
 	LinkManager    pkg_interfaces.LinkManager
-	UserRepository repository_interfaces.UserRepository
+	UserRepository repository_interfaces.GetterUserById
 	Config         config_interfaces.GetterLinkTTL
 }
 
 func NewItemService(
 	itemRepo repository_interfaces.ItemRepository,
 	linkManager pkg_interfaces.LinkManager,
-	userRepo repository_interfaces.UserRepository,
+	userRepo repository_interfaces.GetterUserById,
 	config config_interfaces.GetterLinkTTL,
 ) service_interfaces.ItemService {
 	return &ItemService{
