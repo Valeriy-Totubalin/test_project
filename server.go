@@ -3,20 +3,22 @@ package server
 import (
 	"context"
 	"net/http"
-	"time"
+
+	"github.com/Valeriy-Totubalin/test_project/internal/app/interfaces/config_interfaces"
 )
 
 type Server struct {
 	httpServer *http.Server
+	Config     config_interfaces.ServerConfig
 }
 
-func (s *Server) Run(port string, handler http.Handler) error {
+func (s *Server) Run(handler http.Handler) error {
 	s.httpServer = &http.Server{
-		Addr:           ":" + port,
+		Addr:           ":" + s.Config.GetPort(),
 		Handler:        handler,
 		MaxHeaderBytes: 1 << 20, // 1 mb
-		ReadTimeout:    10 * time.Second,
-		WriteTimeout:   10 * time.Second,
+		ReadTimeout:    s.Config.GetReadTimeout(),
+		WriteTimeout:   s.Config.GetWriteTimeout(),
 	}
 
 	return s.httpServer.ListenAndServe()
