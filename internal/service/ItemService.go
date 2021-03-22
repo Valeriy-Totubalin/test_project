@@ -12,14 +12,14 @@ import (
 type ItemService struct {
 	ItemRepository repository_interfaces.ItemRepository
 	LinkManager    pkg_interfaces.LinkManager
-	UserRepository repository_interfaces.UserRepository
+	UserRepository repository_interfaces.GetterUserById
 	Config         config_interfaces.GetterLinkTTL
 }
 
 func NewItemService(
 	itemRepo repository_interfaces.ItemRepository,
 	linkManager pkg_interfaces.LinkManager,
-	userRepo repository_interfaces.UserRepository,
+	userRepo repository_interfaces.GetterUserById,
 	config config_interfaces.GetterLinkTTL,
 ) service_interfaces.ItemService {
 	return &ItemService{
@@ -43,7 +43,6 @@ func (service *ItemService) GetAll() ([]*domain.Item, error) {
 }
 
 func (service *ItemService) GetTempLink(link *domain.Link) (string, error) {
-	// добавить проверку: может ли этот пользователь передавать этот объект (является ли владельцем)
 	libLink := &link_manager.Link{
 		ItemId:    link.ItemId,
 		UserLogin: link.UserLogin,
@@ -72,11 +71,23 @@ func (service *ItemService) Confirm(tempLink string, userId int) error {
 		return err
 	}
 
-	// необходимо внутри вызвать в транзакции удаление и создание нового объекта
 	err = service.ItemRepository.Transfer(link.ItemId, userId)
 	if nil != err {
 		return err
 	}
 
 	return nil
+}
+
+func (service *ItemService) IsOwner(itemId int, userId int) (bool, error) {
+	item, err := service.ItemRepository.GetById(itemId)
+	if nil != err {
+		return false, err
+	}
+
+	if userId == item.UserId {
+		return true, nil
+	}
+
+	return false, nil
 }
