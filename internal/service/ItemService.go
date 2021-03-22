@@ -43,7 +43,6 @@ func (service *ItemService) GetAll() ([]*domain.Item, error) {
 }
 
 func (service *ItemService) GetTempLink(link *domain.Link) (string, error) {
-	// добавить проверку: может ли этот пользователь передавать этот объект (является ли владельцем)
 	libLink := &link_manager.Link{
 		ItemId:    link.ItemId,
 		UserLogin: link.UserLogin,
@@ -78,4 +77,17 @@ func (service *ItemService) Confirm(tempLink string, userId int) error {
 	}
 
 	return nil
+}
+
+func (service *ItemService) IsOwner(itemId int, userId int) (bool, error) {
+	item, err := service.ItemRepository.GetById(itemId)
+	if nil != err {
+		return false, err
+	}
+
+	if userId == item.UserId {
+		return true, nil
+	}
+
+	return false, nil
 }

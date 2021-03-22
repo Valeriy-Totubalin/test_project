@@ -1,6 +1,8 @@
 package item_repository
 
 import (
+	"errors"
+
 	"github.com/Valeriy-Totubalin/test_project/internal/app/interfaces/repository_interfaces"
 	"github.com/Valeriy-Totubalin/test_project/internal/domain"
 	"gorm.io/gorm"
@@ -103,4 +105,27 @@ func (repo *ItemrRepository) Transfer(itemId int, userId int) error {
 	})
 
 	return nil
+}
+
+func (repo *ItemrRepository) GetById(itemId int) (*domain.Item, error) {
+	db, err := repo.Gorm.GetDB()
+	if nil != err {
+		return nil, err
+	}
+
+	item := Item{}
+	err = db.First(&item, itemId).Error
+	if nil != err {
+		return nil, err
+	}
+
+	if 0 == item.Id {
+		return nil, errors.New("item does not exist")
+	}
+
+	return &domain.Item{
+		Id:     item.Id,
+		Name:   item.Name,
+		UserId: item.UserId,
+	}, nil
 }

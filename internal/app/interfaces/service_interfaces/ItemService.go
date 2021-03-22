@@ -9,4 +9,5 @@ type ItemService interface {
 	GetTempLink(link *domain.Link) (string, error)
 	CanConfirm(tempLink string, userId int) (bool, error)
 	Confirm(tempLink string, userId int) error
+	IsOwner(itemId int, userId int) (bool, error)
 }
