@@ -11,18 +11,22 @@ import (
 )
 
 type Config struct {
-	linkTTL  time.Duration
-	tokenTTL time.Duration
-	db       config_interfaces.DBConfig
-	server   config_interfaces.ServerConfig
+	linkTTL     time.Duration
+	tokenTTL    time.Duration
+	db          config_interfaces.DBConfig
+	server      config_interfaces.ServerConfig
+	tokenSecret string
+	linkSecret  string
 }
 
 func NewConfig(dbConfig config_interfaces.DBConfig, serverConfig config_interfaces.ServerConfig) *Config {
 	return &Config{
-		linkTTL:  getEnvAsHours("LINK_TTL", 24*time.Hour),
-		tokenTTL: getEnvAsMinutes("TOKEN_TTL", 15*time.Minute),
-		db:       dbConfig,
-		server:   serverConfig,
+		linkTTL:     getEnvAsHours("LINK_TTL", 24*time.Hour),
+		tokenTTL:    getEnvAsMinutes("TOKEN_TTL", 15*time.Minute),
+		db:          dbConfig,
+		server:      serverConfig,
+		tokenSecret: getEnv("TOKEN_SECRET", "zPOA4JnM1x1XOxGwo7kknGlcikudhMd09WnJ2DPWdi8"),
+		linkSecret:  getEnv("LINK_SECRET", "agKfggjJJs1kfpdgk95jeihyA6gnsaJheiuJ2DP98wr"),
 	}
 }
 
@@ -61,12 +65,12 @@ func getEnvAsSeconds(name string, defaultVal time.Duration) time.Duration {
 	return defaultVal
 }
 
-func (c *Config) GetLinkTTL() *time.Duration {
-	return &c.linkTTL
+func (c *Config) GetLinkTTL() time.Duration {
+	return c.linkTTL
 }
 
-func (c *Config) GetTokenTTL() *time.Duration {
-	return &c.tokenTTL
+func (c *Config) GetTokenTTL() time.Duration {
+	return c.tokenTTL
 }
 
 func (c *Config) DB() config_interfaces.DBConfig {
@@ -75,6 +79,14 @@ func (c *Config) DB() config_interfaces.DBConfig {
 
 func (c *Config) Srv() config_interfaces.ServerConfig {
 	return c.server
+}
+
+func (c *Config) GetTokenSecret() string {
+	return c.tokenSecret
+}
+
+func (c *Config) GetLinkSecret() string {
+	return c.linkSecret
 }
 
 func Init() {

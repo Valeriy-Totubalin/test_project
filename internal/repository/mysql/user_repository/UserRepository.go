@@ -3,9 +3,9 @@ package user_repository
 import (
 	"errors"
 
+	"github.com/Valeriy-Totubalin/test_project/db/orm"
 	"github.com/Valeriy-Totubalin/test_project/internal/app/interfaces/repository_interfaces"
 	"github.com/Valeriy-Totubalin/test_project/internal/domain"
-	"github.com/Valeriy-Totubalin/test_project/internal/repository/mysql/orm"
 )
 
 type UserRepository struct {
@@ -18,7 +18,7 @@ func NewUserRepository(gorm repository_interfaces.GetterGormDB) *UserRepository 
 	}
 }
 
-func (repo *UserRepository) SignUp(user *domain.User) error {
+func (repo *UserRepository) Create(user *domain.User) error {
 	db, err := repo.Gorm.GetDB()
 	if nil != err {
 		return err

@@ -9,17 +9,17 @@ import (
 	"gorm.io/gorm"
 )
 
-type ItemrRepository struct {
+type ItemRepository struct {
 	Gorm repository_interfaces.GetterGormDB
 }
 
-func NewItemrRepository(gorm repository_interfaces.GetterGormDB) *ItemrRepository {
-	return &ItemrRepository{
+func NewItemRepository(gorm repository_interfaces.GetterGormDB) *ItemRepository {
+	return &ItemRepository{
 		Gorm: gorm,
 	}
 }
 
-func (repo *ItemrRepository) Create(item *domain.Item) error {
+func (repo *ItemRepository) Create(item *domain.Item) error {
 	db, err := repo.Gorm.GetDB()
 	if nil != err {
 		return err
@@ -37,7 +37,7 @@ func (repo *ItemrRepository) Create(item *domain.Item) error {
 	return nil
 }
 
-func (repo *ItemrRepository) DeleteById(itemId int) error {
+func (repo *ItemRepository) DeleteById(itemId int) error {
 	db, err := repo.Gorm.GetDB()
 	if nil != err {
 		return err
@@ -54,7 +54,7 @@ func (repo *ItemrRepository) DeleteById(itemId int) error {
 	return nil
 }
 
-func (repo *ItemrRepository) GetAll() ([]*domain.Item, error) {
+func (repo *ItemRepository) GetAll() ([]*domain.Item, error) {
 	db, err := repo.Gorm.GetDB()
 	if nil != err {
 		return nil, err
@@ -79,7 +79,7 @@ func (repo *ItemrRepository) GetAll() ([]*domain.Item, error) {
 	return domainItems, nil
 }
 
-func (repo *ItemrRepository) Transfer(itemId int, userId int) error {
+func (repo *ItemRepository) Transfer(itemId int, userId int) error {
 	db, err := repo.Gorm.GetDB()
 	if nil != err {
 		return err
@@ -108,7 +108,7 @@ func (repo *ItemrRepository) Transfer(itemId int, userId int) error {
 	return nil
 }
 
-func (repo *ItemrRepository) GetById(itemId int) (*domain.Item, error) {
+func (repo *ItemRepository) GetById(itemId int) (*domain.Item, error) {
 	db, err := repo.Gorm.GetDB()
 	if nil != err {
 		return nil, err
