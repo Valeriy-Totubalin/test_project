@@ -25,14 +25,16 @@ func (repo *ItemRepository) Create(item *domain.Item) error {
 		return err
 	}
 
-	err = db.Create(&orm.Item{
+	itemOrm := &orm.Item{
 		Name:   item.Name,
 		UserId: item.UserId,
-	}).Error
+	}
 
+	err = db.Create(itemOrm).Error
 	if nil != err {
 		return err
 	}
+	item.Id = itemOrm.Id
 
 	return nil
 }
@@ -54,7 +56,7 @@ func (repo *ItemRepository) DeleteById(itemId int) error {
 	return nil
 }
 
-func (repo *ItemRepository) GetAll() ([]*domain.Item, error) {
+func (repo *ItemRepository) GetAll(userId int) ([]*domain.Item, error) {
 	db, err := repo.Gorm.GetDB()
 	if nil != err {
 		return nil, err
@@ -62,7 +64,7 @@ func (repo *ItemRepository) GetAll() ([]*domain.Item, error) {
 
 	var items []*orm.Item
 
-	err = db.Limit(500).Find(&items).Error
+	err = db.Limit(500).Where("user_id = ?", userId).Find(&items).Error
 	if nil != err {
 		return nil, err
 	}
@@ -98,7 +100,7 @@ func (repo *ItemRepository) Transfer(itemId int, userId int) error {
 			return err
 		}
 
-		if err := tx.Create(item).Error; err != nil {
+		if err := tx.Create(&orm.Item{Name: item.Name, UserId: item.UserId}).Error; err != nil {
 			return err
 		}
 
@@ -115,7 +117,7 @@ func (repo *ItemRepository) GetById(itemId int) (*domain.Item, error) {
 	}
 
 	item := orm.Item{}
-	err = db.First(&item, itemId).Error
+	err = db.Find(&item, itemId).Error
 	if nil != err {
 		return nil, err
 	}

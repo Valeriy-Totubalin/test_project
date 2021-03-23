@@ -38,8 +38,8 @@ func (service *ItemService) Delete(item *domain.Item) error {
 	return service.ItemRepository.DeleteById(item.Id)
 }
 
-func (service *ItemService) GetAll() ([]*domain.Item, error) {
-	return service.ItemRepository.GetAll()
+func (service *ItemService) GetAll(userId int) ([]*domain.Item, error) {
+	return service.ItemRepository.GetAll(userId)
 }
 
 func (service *ItemService) GetTempLink(link *domain.Link) (string, error) {
@@ -82,6 +82,9 @@ func (service *ItemService) Confirm(tempLink string, userId int) error {
 func (service *ItemService) IsOwner(itemId int, userId int) (bool, error) {
 	item, err := service.ItemRepository.GetById(itemId)
 	if nil != err {
+		if err.Error() == "item does not exist" {
+			return false, nil
+		}
 		return false, err
 	}
 
@@ -89,5 +92,16 @@ func (service *ItemService) IsOwner(itemId int, userId int) (bool, error) {
 		return true, nil
 	}
 
+	return false, nil
+}
+
+func (service *ItemService) IsDeleted(itemId int) (bool, error) {
+	_, err := service.ItemRepository.GetById(itemId)
+	if nil != err {
+		if err.Error() == "item does not exist" {
+			return true, nil
+		}
+		return false, err
+	}
 	return false, nil
 }
