@@ -40,6 +40,12 @@ type UserRepositoryMock struct {
 	mock.Mock
 }
 
+func (m *UserRepositoryMock) IsExists(user *domain.User) bool {
+	m.Called(user)
+
+	return false
+}
+
 func (m *UserRepositoryMock) Create(user *domain.User) error {
 	m.Called(user)
 
@@ -147,4 +153,26 @@ func TestSignIn(t *testing.T) {
 	tokenManager.AssertExpectations(t)
 
 	assert.Equal(t, nil, err)
+}
+
+func TestIsExists(t *testing.T) {
+	passwordHasher := new(PasswordHasherMock)
+	repository := new(UserRepositoryMock)
+	tokenManager := new(TokenManagerMock)
+	config := new(ConfigMock)
+
+	service := NewAuthService(repository, passwordHasher, tokenManager, config)
+	user := &domain.User{
+		Id:       1,
+		Login:    "test_login",
+		Password: "test_password",
+	}
+
+	repository.On("IsExists", user).Return(false).Once()
+
+	isExists := service.IsExists(user)
+
+	repository.AssertExpectations(t)
+
+	assert.False(t, isExists)
 }

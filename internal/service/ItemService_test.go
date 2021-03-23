@@ -61,18 +61,24 @@ func (m *ItemRepositoryMock) DeleteById(itemId int) error {
 	return nil
 }
 
-func (m *ItemRepositoryMock) GetAll() ([]*domain.Item, error) {
-	m.Called()
+func (m *ItemRepositoryMock) GetAll(userId int) ([]*domain.Item, error) {
+	m.Called(userId)
 
 	return []*domain.Item{
 		{
-			Id: 42,
+			Id:     42,
+			Name:   "item_1",
+			UserId: 42,
 		},
 		{
-			Id: 23,
+			Id:     23,
+			Name:   "item_2",
+			UserId: 42,
 		},
 		{
-			Id: 97,
+			Id:     97,
+			Name:   "item_3",
+			UserId: 42,
 		},
 	}, nil
 }
@@ -161,19 +167,26 @@ func TestGetAll(t *testing.T) {
 
 	items := []*domain.Item{
 		{
-			Id: 42,
+			Id:     42,
+			Name:   "item_1",
+			UserId: 42,
 		},
 		{
-			Id: 23,
+			Id:     23,
+			Name:   "item_2",
+			UserId: 42,
 		},
 		{
-			Id: 97,
+			Id:     97,
+			Name:   "item_3",
+			UserId: 42,
 		},
 	}
+	userId := 42
 
-	repository.On("GetAll").Return(items).Once()
+	repository.On("GetAll", userId).Return(items).Once()
 
-	itemsReturned, err := service.GetAll()
+	itemsReturned, err := service.GetAll(userId)
 
 	repository.AssertExpectations(t)
 	assert.Nil(t, err)
@@ -292,4 +305,31 @@ func TestIsOwner(t *testing.T) {
 	repository.AssertExpectations(t)
 	assert.Nil(t, err)
 	assert.True(t, isOwner)
+}
+
+func TestIsDeleted(t *testing.T) {
+	repository := new(ItemRepositoryMock)
+	linkManager := new(LinkManagerMock)
+	userRepository := new(UserRepositoryMock)
+	config := new(ConfigMock)
+
+	service := NewItemService(repository, linkManager, userRepository, config)
+
+	id := 42
+	name := "test_item"
+	userId := 7
+
+	item := &domain.Item{
+		Id:     id,
+		Name:   name,
+		UserId: userId,
+	}
+
+	repository.On("GetById", item.Id).Return(item, nil).Once()
+
+	isDeleted, err := service.IsDeleted(item.Id)
+
+	repository.AssertExpectations(t)
+	assert.Nil(t, err)
+	assert.False(t, isDeleted)
 }

@@ -24,10 +24,6 @@ func (repo *UserRepository) Create(user *domain.User) error {
 		return err
 	}
 
-	if repo.isExists(user) {
-		return errors.New("user already exists")
-	}
-
 	err = db.Create(&orm.User{
 		Login:    user.Login,
 		Password: user.Password,
@@ -53,7 +49,7 @@ func (repo *UserRepository) GetByLogin(login string) (*domain.User, error) {
 	}
 
 	if 0 == user.Id {
-		return nil, errors.New("user does not exist")
+		return &domain.User{}, errors.New("user does not exist")
 	}
 	return &domain.User{
 		Id:       user.Id,
@@ -85,7 +81,7 @@ func (repo *UserRepository) GetById(userId int) (*domain.User, error) {
 	}, nil
 }
 
-func (repo *UserRepository) isExists(user *domain.User) bool {
+func (repo *UserRepository) IsExists(user *domain.User) bool {
 	domainUser, _ := repo.GetByLogin(user.Login)
 	if 0 == domainUser.Id {
 		return false
