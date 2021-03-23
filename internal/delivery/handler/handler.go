@@ -5,9 +5,13 @@ import (
 	"net/http"
 	"strconv"
 
+	_ "github.com/Valeriy-Totubalin/test_project/docs"
 	"github.com/Valeriy-Totubalin/test_project/internal/app/interfaces/factories_interfaces"
 	"github.com/Valeriy-Totubalin/test_project/internal/app/interfaces/pkg_interfaces"
 	"github.com/gin-gonic/gin"
+
+	swaggerFiles "github.com/swaggo/files"     // swagger embed files
+	ginSwagger "github.com/swaggo/gin-swagger" // gin-swagger middleware
 )
 
 const UnknowError = "unknown error"
@@ -48,16 +52,18 @@ func (h *Handler) InitRoutes() *gin.Engine {
 		v1 := api.Group("/v1")
 		v1.Use(h.checkToken) // middleware
 		{
+			v1.GET("/items", h.getItems)
 			items := v1.Group("/items")
 			{
 				items.POST("/new", h.createItem)
 				items.DELETE("/:id", h.deleteItem)
-				items.GET("", h.getItems)
 			}
 			v1.POST("/send", h.sendItem)
 			v1.GET("/get/:link", h.confirm)
 		}
 	}
+
+	router.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
 
 	return router
 }

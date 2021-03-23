@@ -9,6 +9,17 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
+// @Summary sign-up
+// @Tags auth
+// @Description Create new account
+// @ID sign-up
+// @Accept  json
+// @Produce  json
+// @Param input body request.SignUp true "account info"
+// @Success 201 {object} response.Message
+// @Failure 400 {object} response.Error
+// @Failure 500 {object} response.Error
+// @Router /auth/v1/registration [post]
 func (h *Handler) signUp(c *gin.Context) {
 	var data request.SignUp
 	err := c.ShouldBindJSON(&data)
@@ -40,9 +51,20 @@ func (h *Handler) signUp(c *gin.Context) {
 		return
 	}
 
-	c.JSON(http.StatusOK, response.Message{Message: RegistrationSucces})
+	c.JSON(http.StatusCreated, response.Message{Message: RegistrationSucces})
 }
 
+// @Summary sign-in
+// @Tags auth
+// @Description Log in with an existing account
+// @ID sign-in
+// @Accept  json
+// @Produce  json
+// @Param input body request.SignIn true "login and password from the account"
+// @Success 200 {object} response.Token
+// @Failure 400 {object} response.Error
+// @Failure 500 {object} response.Error
+// @Router /auth/v1/login [post]
 func (h *Handler) signIn(c *gin.Context) {
 	var data request.SignIn
 	err := c.ShouldBindJSON(&data)
@@ -68,5 +90,5 @@ func (h *Handler) signIn(c *gin.Context) {
 		return
 	}
 
-	c.JSON(http.StatusCreated, response.Token{AccessToken: token})
+	c.JSON(http.StatusOK, response.Token{AccessToken: token})
 }

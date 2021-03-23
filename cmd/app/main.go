@@ -11,6 +11,16 @@ import (
 	"github.com/Valeriy-Totubalin/test_project/pkg/token_manager"
 )
 
+// @title Todo App API
+// @version 1.0
+// @description API server for test application
+
+// @host localhost:8080
+// @BasePath /
+
+// @securitydefinitions.apikey ApiKeyAuth
+// @in header
+// @name Authorization
 func main() {
 	config.Init()
 	serverConfig := config.NewServer()

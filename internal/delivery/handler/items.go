@@ -9,6 +9,19 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
+// @Summary create
+// @Security ApiKeyAuth
+// @Tags items
+// @Description Create new item for current user
+// @ID createItem
+// @Accept  json
+// @Produce  json
+// @Param input body request.NewItem true "New item data"
+// @Success 201 {object} response.CreatedItem
+// @Failure 400 {object} response.Error
+// @Failure 401 {object} response.Error
+// @Failure 500 {object} response.Error
+// @Router /api/v1/items/new [post]
 func (h *Handler) createItem(c *gin.Context) {
 	var data request.NewItem
 	err := c.ShouldBindJSON(&data)
@@ -49,6 +62,19 @@ func (h *Handler) createItem(c *gin.Context) {
 	})
 }
 
+// @Summary delete
+// @Security ApiKeyAuth
+// @Tags items
+// @Description Delete item by Id
+// @ID deleteItem
+// @Accept  json
+// @Produce  json
+// @Param input body request.DeleteItem true "Item Id"
+// @Success 200 {object} response.Message
+// @Failure 400 {object} response.Error
+// @Failure 401 {object} response.Error
+// @Failure 500 {object} response.Error
+// @Router /api/v1/items/{id} [delete]
 func (h *Handler) deleteItem(c *gin.Context) {
 	var data request.DeleteItem
 	err := c.ShouldBindUri(&data)
@@ -89,6 +115,18 @@ func (h *Handler) deleteItem(c *gin.Context) {
 	c.JSON(http.StatusOK, response.Message{Message: ItemDeletedSuccess})
 }
 
+// @Summary get
+// @Security ApiKeyAuth
+// @Tags items
+// @Description Get items fo current user
+// @ID getItems
+// @Accept  json
+// @Produce  json
+// @Success 200 {object} []response.Item
+// @Failure 400 {object} response.Error
+// @Failure 401 {object} response.Error
+// @Failure 500 {object} response.Error
+// @Router /api/v1/items [get]
 func (h *Handler) getItems(c *gin.Context) {
 	service, err := h.ServiceFactory.NewItemService()
 	if nil != err {
@@ -120,6 +158,19 @@ func (h *Handler) getItems(c *gin.Context) {
 	c.JSON(http.StatusOK, responseItems)
 }
 
+// @Summary send
+// @Security ApiKeyAuth
+// @Tags items
+// @Description Send item
+// @ID sendItem
+// @Accept  json
+// @Produce  json
+// @Param input body request.SendItem true "Item data for send"
+// @Success 200 {object} response.TempLink
+// @Failure 400 {object} response.Error
+// @Failure 401 {object} response.Error
+// @Failure 500 {object} response.Error
+// @Router /api/v1/send [post]
 func (h *Handler) sendItem(c *gin.Context) {
 	var data request.SendItem
 	err := c.ShouldBindJSON(&data)
@@ -165,6 +216,19 @@ func (h *Handler) sendItem(c *gin.Context) {
 	c.JSON(http.StatusOK, response.TempLink{Link: tempLink})
 }
 
+// @Summary get
+// @Security ApiKeyAuth
+// @Tags items
+// @Description Confirm send item
+// @ID confirm
+// @Accept  json
+// @Produce  json
+// @Param input body request.SendItem true "link"
+// @Success 200 {object} response.Message
+// @Failure 400 {object} response.Error
+// @Failure 401 {object} response.Error
+// @Failure 500 {object} response.Error
+// @Router /api/v1/get [get]
 func (h *Handler) confirm(c *gin.Context) {
 	var data request.Confirm
 	err := c.ShouldBindUri(&data)

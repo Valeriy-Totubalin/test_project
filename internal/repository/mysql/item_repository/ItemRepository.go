@@ -64,7 +64,7 @@ func (repo *ItemRepository) GetAll(userId int) ([]*domain.Item, error) {
 
 	var items []*orm.Item
 
-	err = db.Limit(500).Find(&items).Error
+	err = db.Limit(500).Where("user_id = ?", userId).Find(&items).Error
 	if nil != err {
 		return nil, err
 	}
