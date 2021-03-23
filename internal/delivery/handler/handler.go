@@ -16,6 +16,8 @@ const UserAlreadyExists = "user already exists"
 const ItemCreatedSuccess = "item created successfully"
 const ItemDeletedSuccess = "item deleted successfully"
 const ItemNoCurrentUser = "item is not owned by the current user"
+const NoGetItem = "you cannot get this item"
+const ObjectReceived = "object received"
 
 type Handler struct {
 	TokenManager   pkg_interfaces.TokenManager
@@ -47,7 +49,10 @@ func (h *Handler) InitRoutes() *gin.Engine {
 			{
 				items.POST("/new", h.createItem)
 				items.DELETE("/:id", h.deleteItem)
+				items.GET("", h.getItems)
 			}
+			v1.POST("/send", h.sendItem)
+			v1.GET("/get/:link", h.confirm)
 		}
 	}
 

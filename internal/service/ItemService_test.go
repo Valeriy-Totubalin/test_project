@@ -61,18 +61,24 @@ func (m *ItemRepositoryMock) DeleteById(itemId int) error {
 	return nil
 }
 
-func (m *ItemRepositoryMock) GetAll() ([]*domain.Item, error) {
-	m.Called()
+func (m *ItemRepositoryMock) GetAll(userId int) ([]*domain.Item, error) {
+	m.Called(userId)
 
 	return []*domain.Item{
 		{
-			Id: 42,
+			Id:     42,
+			Name:   "item_1",
+			UserId: 42,
 		},
 		{
-			Id: 23,
+			Id:     23,
+			Name:   "item_2",
+			UserId: 42,
 		},
 		{
-			Id: 97,
+			Id:     97,
+			Name:   "item_3",
+			UserId: 42,
 		},
 	}, nil
 }
@@ -161,19 +167,26 @@ func TestGetAll(t *testing.T) {
 
 	items := []*domain.Item{
 		{
-			Id: 42,
+			Id:     42,
+			Name:   "item_1",
+			UserId: 42,
 		},
 		{
-			Id: 23,
+			Id:     23,
+			Name:   "item_2",
+			UserId: 42,
 		},
 		{
-			Id: 97,
+			Id:     97,
+			Name:   "item_3",
+			UserId: 42,
 		},
 	}
+	userId := 42
 
-	repository.On("GetAll").Return(items).Once()
+	repository.On("GetAll", userId).Return(items).Once()
 
-	itemsReturned, err := service.GetAll()
+	itemsReturned, err := service.GetAll(userId)
 
 	repository.AssertExpectations(t)
 	assert.Nil(t, err)

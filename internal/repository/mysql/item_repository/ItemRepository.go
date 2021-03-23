@@ -56,7 +56,7 @@ func (repo *ItemRepository) DeleteById(itemId int) error {
 	return nil
 }
 
-func (repo *ItemRepository) GetAll() ([]*domain.Item, error) {
+func (repo *ItemRepository) GetAll(userId int) ([]*domain.Item, error) {
 	db, err := repo.Gorm.GetDB()
 	if nil != err {
 		return nil, err
