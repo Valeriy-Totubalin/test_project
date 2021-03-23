@@ -2,7 +2,7 @@ package response
 
 type CreatedItem struct {
 	Message string `json:"message" binding:"required"`
-	Item    *Item
+	Item    *Item  `json:"item" binding:"required"`
 }
 
 type Item struct {

@@ -55,7 +55,7 @@ func (service *AuthService) SignIn(user *domain.User) (string, error) { // retur
 		return "", err
 	}
 
-	token, err := service.TokenManager.NewJWT(user.Id, service.Config.GetTokenTTL())
+	token, err := service.TokenManager.NewJWT(userReturned.Id, service.Config.GetTokenTTL())
 	if nil != err {
 		return "", err
 	}

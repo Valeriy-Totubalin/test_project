@@ -100,7 +100,7 @@ func (repo *ItemRepository) Transfer(itemId int, userId int) error {
 			return err
 		}
 
-		if err := tx.Create(item).Error; err != nil {
+		if err := tx.Create(&orm.Item{Name: item.Name, UserId: item.UserId}).Error; err != nil {
 			return err
 		}
 
@@ -117,7 +117,7 @@ func (repo *ItemRepository) GetById(itemId int) (*domain.Item, error) {
 	}
 
 	item := orm.Item{}
-	err = db.First(&item, itemId).Error
+	err = db.Find(&item, itemId).Error
 	if nil != err {
 		return nil, err
 	}

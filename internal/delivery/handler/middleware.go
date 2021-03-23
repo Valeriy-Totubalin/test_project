@@ -3,6 +3,7 @@ package handler
 import (
 	"errors"
 	"net/http"
+	"strconv"
 	"strings"
 
 	"github.com/Valeriy-Totubalin/test_project/internal/delivery/response"
@@ -16,7 +17,8 @@ func (h *Handler) checkToken(c *gin.Context) {
 	if nil != err {
 		c.AbortWithStatusJSON(http.StatusUnauthorized, response.Error{Error: err.Error()})
 	}
-	c.Set("user_id", id)
+
+	c.Set("user_id", strconv.Itoa(id))
 }
 
 func (h *Handler) parseAuthHeader(c *gin.Context) (int, error) {

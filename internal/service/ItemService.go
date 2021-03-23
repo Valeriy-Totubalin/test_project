@@ -94,3 +94,14 @@ func (service *ItemService) IsOwner(itemId int, userId int) (bool, error) {
 
 	return false, nil
 }
+
+func (service *ItemService) IsDeleted(itemId int) (bool, error) {
+	_, err := service.ItemRepository.GetById(itemId)
+	if nil != err {
+		if err.Error() == "item does not exist" {
+			return true, nil
+		}
+		return false, err
+	}
+	return false, nil
+}

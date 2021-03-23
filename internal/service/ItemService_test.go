@@ -306,3 +306,30 @@ func TestIsOwner(t *testing.T) {
 	assert.Nil(t, err)
 	assert.True(t, isOwner)
 }
+
+func TestIsDeleted(t *testing.T) {
+	repository := new(ItemRepositoryMock)
+	linkManager := new(LinkManagerMock)
+	userRepository := new(UserRepositoryMock)
+	config := new(ConfigMock)
+
+	service := NewItemService(repository, linkManager, userRepository, config)
+
+	id := 42
+	name := "test_item"
+	userId := 7
+
+	item := &domain.Item{
+		Id:     id,
+		Name:   name,
+		UserId: userId,
+	}
+
+	repository.On("GetById", item.Id).Return(item, nil).Once()
+
+	isDeleted, err := service.IsDeleted(item.Id)
+
+	repository.AssertExpectations(t)
+	assert.Nil(t, err)
+	assert.False(t, isDeleted)
+}

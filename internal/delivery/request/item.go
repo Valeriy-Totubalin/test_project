@@ -9,10 +9,10 @@ type DeleteItem struct {
 }
 
 type SendItem struct {
-	ItemId    int    `json:"id" binding:"required"`
-	UserLogin string `json:"login" binding:"required,max=60"`
+	ItemId    int    `json:"item_id" binding:"required"`
+	UserLogin string `json:"user_login" binding:"required,max=60"`
 }
 
 type Confirm struct {
-	Link string `json:"temp_link" binding:"required"`
+	Link string `uri:"link" binding:"required"`
 }

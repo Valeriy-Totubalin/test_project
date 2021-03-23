@@ -122,7 +122,7 @@ func (h *Handler) getItems(c *gin.Context) {
 
 func (h *Handler) sendItem(c *gin.Context) {
 	var data request.SendItem
-	err := c.ShouldBindUri(&data)
+	err := c.ShouldBindJSON(&data)
 	if nil != err {
 		c.JSON(http.StatusBadRequest, response.Error{Error: err.Error()})
 		return
@@ -148,6 +148,7 @@ func (h *Handler) sendItem(c *gin.Context) {
 
 	if !isOwner {
 		c.JSON(http.StatusForbidden, response.Error{Error: ItemNoCurrentUser})
+		return
 	}
 
 	link := &domain.Link{
@@ -192,6 +193,23 @@ func (h *Handler) confirm(c *gin.Context) {
 
 	if !CanConfirm {
 		c.JSON(http.StatusForbidden, response.Error{Error: NoGetItem})
+		return
+	}
+
+	link, err := h.LinkManager.Parse(data.Link)
+	if nil != err {
+		c.JSON(http.StatusInternalServerError, response.Error{Error: UnknowError})
+		return
+	}
+
+	isDeleted, err := service.IsDeleted(link.ItemId)
+	if nil != err {
+		c.JSON(http.StatusInternalServerError, response.Error{Error: UnknowError})
+		return
+	}
+
+	if isDeleted {
+		c.JSON(http.StatusBadRequest, response.Error{Error: ItemTransferedOrDeleted})
 		return
 	}
 

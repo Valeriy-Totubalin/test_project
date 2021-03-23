@@ -10,4 +10,5 @@ type ItemService interface {
 	CanConfirm(tempLink string, userId int) (bool, error)
 	Confirm(tempLink string, userId int) error
 	IsOwner(itemId int, userId int) (bool, error)
+	IsDeleted(itemId int) (bool, error)
 }

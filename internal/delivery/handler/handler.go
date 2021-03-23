@@ -18,10 +18,13 @@ const ItemDeletedSuccess = "item deleted successfully"
 const ItemNoCurrentUser = "item is not owned by the current user"
 const NoGetItem = "you cannot get this item"
 const ObjectReceived = "object received"
+const YouOwner = "you are the owner of this item"
+const ItemTransferedOrDeleted = "the item was transferred or deleted"
 
 type Handler struct {
 	TokenManager   pkg_interfaces.TokenManager
 	ServiceFactory factories_interfaces.ServicesFactory
+	LinkManager    pkg_interfaces.LinkManager
 }
 
 func (h *Handler) InitRoutes() *gin.Engine {
